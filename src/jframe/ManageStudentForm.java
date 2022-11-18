@@ -4,6 +4,7 @@
  */
 package jframe;
 
+import DatabaseHandler.DatabaseHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.*;
@@ -23,9 +24,11 @@ public class ManageStudentForm extends javax.swing.JFrame {
     int sFine,sIssue;
    
     DefaultTableModel model;
+    final String databaseName= "library_ms";
+    final String tableName = "students";
     
     int calltoUpdate =1;
-
+    DatabaseHandler db = new DatabaseHandler();
     
     public ManageStudentForm() {
         initComponents();
@@ -36,91 +39,153 @@ public class ManageStudentForm extends javax.swing.JFrame {
     //Method That Fetched Data from Database And set It to table
     
     public void setStudentDetailTable(){
-        try {
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor"); 
-           
-             Statement stmt= con.createStatement();
-             ResultSet rset= stmt.executeQuery("select * from student");
-             
-             while (rset.next()){
-               
-                 String sID= rset.getString(1);
-                 String sFullname=rset.getString(2)+ rset.getString(3);
-                 String sPhone=rset.getString(4);
-                 String sEmail= rset.getString(5);
-                 String sAddress=rset.getString(6);
-                 String sDepartment=rset.getString(7);
-                 String sInstitute=rset.getString(8);
-                 String sGender= rset.getString(9);
-
-                 Object [] obj = {sID,sFullname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                model = (DefaultTableModel) studentTable.getModel();
-                model.addRow(obj);
+             try {
                  
-             }
-             
-             
-             
+                 
+                 
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
+            if (db.isDatabaseExists(con, databaseName)){
+                                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName, "root", "");
+                                Statement stmt= con.createStatement();
+                                String querry = "select * from "+ tableName;
+                                ResultSet rset= stmt.executeQuery(querry);
+
+                                while (rset.next()){
+                                 String sID= rset.getString(1);
+                                String sFullname=rset.getString(2)+ rset.getString(3);
+                                String sPhone=rset.getString(5);
+                                String sEmail= rset.getString(4);
+                                String sAddress=rset.getString(6);
+                                String sDepartment=rset.getString(9);
+                                String sInstitute=rset.getString(7);
+                                String sGender= rset.getString(8);
+
+                                Object [] obj = {sID,sFullname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
+                               model = (DefaultTableModel) studentTable.getModel();
+                               model.addRow(obj);
+                 
+                                }
+            }
         }catch(Exception e )
         {
-            e.printStackTrace();
+                
         }
+        
+        
+        
     }
+    
+    
+    
+    
+    
+    
     //To add book to booktable
     public boolean addStudent(){
         boolean isAdded=false;
         boolean checkException=true;
         
         if (s_first.getText().isEmpty() || s_last.getText().isEmpty() || s_email.getText().isEmpty() || s_institute.getText().isEmpty() || s_id.getText().isEmpty() || s_phone.getText().isEmpty() || s_address.getText().isEmpty() || s_department.getText().isEmpty()){
-            messageLabel.setText("Please Provide Values To Fields, Thank You");
-            return isAdded;
+                        messageLabel.setText("Please Provide Values To Fields, Thank You");
+                        return isAdded;
         }
         else{
         
         
-        sID= s_id.getText();
-        sFname=s_first.getText();
-        sLname= s_last.getText();
-        sEmail= s_email.getText();
-        sPhone=s_phone.getText();
-        sAddress=s_address.getText();
-        sInstitute=s_institute.getText();
-        sDepartment=s_department.getText();
-        sGender=s_gender.getText();
-        if (checkException) {
-            try {
+                        sID= s_id.getText();
+                        sFname=s_first.getText();
+                        sLname= s_last.getText();
+                        sEmail= s_email.getText();
+                        sPhone=s_phone.getText();
+                        sAddress=s_address.getText();
+                        sInstitute=s_institute.getText();
+                        sDepartment=s_department.getText();
+                        sGender=s_gender.getText();
+                        if (checkException) {
+                                          try {
 
-                Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-                String sql = "insert into student values (?,?,?,?,?,?,?,?,?)";
-                PreparedStatement pst = conc.prepareStatement(sql);
-                pst.setString(1,    sID );
-                pst.setString(2, sFname);
-                pst.setString(3, sLname);
-                pst.setString(4, sPhone);
-                pst.setString(5, sEmail);
-                pst.setString(6, sAddress );
-                pst.setString(7, sDepartment);
-                pst.setString(8, sInstitute);
-                pst.setString(9, sGender);
+                            Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root","");            //Creating Connection to database
+                             String url = "jdbc:mysql://localhost:3306/"+databaseName; 
+                             if (db.isDatabaseExists(conc, databaseName ) ){
+                                     
+                                          if(db.isTableExists(conc, tableName)){
+                                                   
+                                                    Connection newConnection = DriverManager.getConnection(url ,"root", "");            
+                                                    String sql = "insert into "+ tableName+" values (?,?,?,?,?,?,?,?,?,?,?)";                     //Creating Querry as a String
+                                                    PreparedStatement pst = newConnection.prepareStatement(sql);      //Prepare Our Querry and setting values to indicies
+                                                  pst.setString(1,    sID );
+                                                    pst.setString(2, sFname);
+                                                    pst.setString(3, sLname);
+                                                    pst.setString(4, sEmail);
+                                                    pst.setString(5, sPhone);
+                                                    pst.setString(6, sAddress );
+                                                    pst.setString(7, sInstitute);
+                                                    pst.setString(8, sGender);
+                                                    pst.setString(9, sDepartment);
+                                                    pst.setInt(10, 200);
+                                                    pst.setInt(11,2);
+                                                    int rowcount = pst.executeUpdate();
+                                                    if (rowcount > 0) {
+                                                        isAdded = true;
+                                                    } else {
+                                                        isAdded = false;
+                                                    }
+                                         }else {
+                                                    System.out.println("Creating Table " + tableName);
+                                                    //Creating Table in Case when table is not created in database
+                                                    //Attributes of the Table
+                                                   String attributes ="CREATE TABLE  students (\n"
+                                                            + "s_id integer PRIMARY KEY,\n"
+                                                            + "s_fname  varchar(25),\n"
+                                                            + "s_lname varchar(25),\n"
+                                                            + "s_email    varchar(50),\n"
+                                                            + "s_phone varchar(20),\n"
+                                                            + "s_address varchar(100),\n"
+                                                           + "s_institute varchar(100)\n,"
+                                                            + "s_gender varchar(1),\n"
+                                                           + "s_department varchar(100),\n"
+                                                           + "s_fine integer,\n"
+                                                           + "s_issue integer);\n";
 
-                int rowcount = pst.executeUpdate();
-                if (rowcount > 0) {
-                    isAdded = true;
-                } else {
-                    isAdded = false;
-                }
+                                                 db.createTable(conc, databaseName, tableName,attributes );        //Calling createTable method of DatabaseHandler Class
+                                                 Connection newConnection = DriverManager.getConnection(url ,"root", "");            
 
+                                                    String sql = "insert into "+ tableName+" values (?,?,?,?,?,?,?,?,?,?,?)";                     //Creating Querry as a String
+
+                                                    PreparedStatement pst = newConnection.prepareStatement(sql);      //Prepare Our Querry and setting values to indicies
+                                                    pst.setString(1,    sID );
+                                                    pst.setString(2, sFname);
+                                                    pst.setString(3, sLname);
+                                                    pst.setString(4, sEmail);
+                                                    pst.setString(5, sPhone);
+                                                    pst.setString(6, sAddress );
+                                                    pst.setString(7, sInstitute);
+                                                    pst.setString(8, sGender);
+                                                    pst.setString(9, sDepartment);
+                                                    pst.setInt(10,200);
+                                                    pst.setInt(11,2);
+
+                                                    int rowcount = pst.executeUpdate();
+                                                    if (rowcount > 0) {
+                                                        isAdded = true;
+                                                    } else {
+                                                        isAdded = false;
+                                                    }
+                                          }
+                              }else{
+                                        System.out.println ("Database is not Exist so creating database");;
+                 
+                    }
             } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    e.printStackTrace();
+            } //end of try and Catch block
+                    }
         
-        System.out.println(isAdded);
+      
            
         
-     return isAdded;
-     }
+                    return isAdded;
+            }
     }
     
     //Method to clear Table
@@ -146,18 +211,19 @@ public class ManageStudentForm extends javax.swing.JFrame {
         sDepartment=s_department.getText();
         sGender=s_gender.getText();
         
+        System.out.println(sID);
         try{
-            Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor");
-           String sql = "update student set fname = ?, lname = ? , phone = ?, emial = ?, address = ? , depart = ? , institute = ? , gender =  ? ";
+            Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","");
+           String sql = "update students set s_fname = ?, s_lname = ? , s_email = ?, s_phone = ?, s_address = ? , s_institute = ? ,s_gender = ? , s_department =  ?  where s_id =  " + s_id.getText() ;
            PreparedStatement pst = conc.prepareStatement(sql);
            pst.setString(1, sFname);
            pst.setString(2, sLname);
-           pst.setString(3, sPhone);
-           pst.setString(4, sEmail);
+           pst.setString(3, sEmail);
+           pst.setString(4, sPhone);
            pst.setString(5, sAddress);
-           pst.setString(6, sDepartment);
-           pst.setString(7, sInstitute);
-           pst.setString(8, sGender);
+           pst.setString(6, sInstitute);
+           pst.setString(7, sGender);
+           pst.setString(8, sDepartment);
 //            
             int rowcount = pst.executeUpdate();
             if(rowcount> 0){
@@ -180,8 +246,8 @@ public class ManageStudentForm extends javax.swing.JFrame {
           sID= s_id.getText();
           
           try{
-             Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor");
-            String sql = "delete from student where sid = ? ";
+             Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName,"root","");
+            String sql = "delete from "+tableName+" where s_id = ? ";
             PreparedStatement pst = conc.prepareStatement(sql);
             pst.setString(1,sID);
             
@@ -193,14 +259,26 @@ public class ManageStudentForm extends javax.swing.JFrame {
             }
             
           }catch (Exception e ){
-              
+                    e.printStackTrace();
           }
         
         return isDeleted;
     }
     
     
-    
+    public void clearFields(){
+        
+                 messageLabel.setText("");
+                s_id.setText("");
+                s_first.setText("");
+                s_last.setText("");
+                s_email.setText("");
+                s_phone.setText("");
+                s_institute.setText("");
+                s_department.setText("");
+                s_gender.setText("");
+                s_address.setText("");
+    }
     
     
 
@@ -280,12 +358,12 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_departmentActionPerformed(evt);
             }
         });
-        jPanel1.add(s_department, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 570, 240, 25));
+        jPanel1.add(s_department, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 520, 240, 25));
 
-        sdepartmentLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        sdepartmentLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         sdepartmentLabel.setForeground(new java.awt.Color(255, 255, 255));
         sdepartmentLabel.setText("Department:");
-        jPanel1.add(sdepartmentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 570, 100, -1));
+        jPanel1.add(sdepartmentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 520, 100, -1));
 
         s_id.setBackground(new java.awt.Color(102, 102, 255));
         s_id.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -297,7 +375,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_idActionPerformed(evt);
             }
         });
-        jPanel1.add(s_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 250, 240, 25));
+        jPanel1.add(s_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 200, 240, 25));
 
         s_first.setBackground(new java.awt.Color(102, 102, 255));
         s_first.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -309,7 +387,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_firstActionPerformed(evt);
             }
         });
-        jPanel1.add(s_first, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 290, 240, 25));
+        jPanel1.add(s_first, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 240, 240, 25));
 
         s_last.setBackground(new java.awt.Color(102, 102, 255));
         s_last.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -321,7 +399,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_lastActionPerformed(evt);
             }
         });
-        jPanel1.add(s_last, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 330, 240, 25));
+        jPanel1.add(s_last, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, 240, 25));
 
         s_email.setBackground(new java.awt.Color(102, 102, 255));
         s_email.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -333,7 +411,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_emailActionPerformed(evt);
             }
         });
-        jPanel1.add(s_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 370, 240, 25));
+        jPanel1.add(s_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 320, 240, 25));
 
         s_phone.setBackground(new java.awt.Color(102, 102, 255));
         s_phone.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -345,7 +423,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_phoneActionPerformed(evt);
             }
         });
-        jPanel1.add(s_phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 410, 240, 25));
+        jPanel1.add(s_phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 360, 240, 25));
 
         s_address.setBackground(new java.awt.Color(102, 102, 255));
         s_address.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -357,37 +435,37 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_addressActionPerformed(evt);
             }
         });
-        jPanel1.add(s_address, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 450, 240, 25));
+        jPanel1.add(s_address, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 400, 240, 25));
 
-        sidLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        sidLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         sidLabel.setForeground(new java.awt.Color(255, 255, 255));
         sidLabel.setText("Student ID:");
-        jPanel1.add(sidLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 100, -1));
+        jPanel1.add(sidLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 100, -1));
 
-        fnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        fnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         fnameLabel.setForeground(new java.awt.Color(255, 255, 255));
         fnameLabel.setText("First Name:");
-        jPanel1.add(fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 100, -1));
+        jPanel1.add(fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 100, -1));
 
-        lnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        lnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         lnameLabel.setForeground(new java.awt.Color(255, 255, 255));
         lnameLabel.setText("Last Name:");
-        jPanel1.add(lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 100, -1));
+        jPanel1.add(lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, 100, -1));
 
-        semailLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        semailLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         semailLabel.setForeground(new java.awt.Color(255, 255, 255));
         semailLabel.setText("Email Address:");
-        jPanel1.add(semailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, 110, -1));
+        jPanel1.add(semailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 110, -1));
 
-        sphoneLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        sphoneLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         sphoneLabel.setForeground(new java.awt.Color(255, 255, 255));
         sphoneLabel.setText("Phone No:");
-        jPanel1.add(sphoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, 100, -1));
+        jPanel1.add(sphoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 100, -1));
 
-        saddressLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        saddressLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         saddressLabel.setForeground(new java.awt.Color(255, 255, 255));
         saddressLabel.setText("Address:");
-        jPanel1.add(saddressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 120, -1));
+        jPanel1.add(saddressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 400, 120, -1));
 
         s_institute.setBackground(new java.awt.Color(102, 102, 255));
         s_institute.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -399,54 +477,57 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_instituteActionPerformed(evt);
             }
         });
-        jPanel1.add(s_institute, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 490, 240, 25));
+        jPanel1.add(s_institute, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 440, 240, 25));
 
-        sinstituteLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        sinstituteLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         sinstituteLabel.setForeground(new java.awt.Color(255, 255, 255));
         sinstituteLabel.setText("Institute:");
-        jPanel1.add(sinstituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 100, -1));
+        jPanel1.add(sinstituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 440, 100, -1));
 
         delete_std.setBackground(new java.awt.Color(255, 51, 0));
         delete_std.setForeground(new java.awt.Color(0, 0, 0));
         delete_std.setText("Delete");
+        delete_std.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         delete_std.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 delete_stdActionPerformed(evt);
             }
         });
-        jPanel1.add(delete_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 630, 110, -1));
+        jPanel1.add(delete_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 580, 110, -1));
 
         add_std.setBackground(new java.awt.Color(255, 255, 255));
         add_std.setForeground(new java.awt.Color(0, 0, 0));
         add_std.setText("Add");
+        add_std.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         add_std.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 add_stdActionPerformed(evt);
             }
         });
-        jPanel1.add(add_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 630, 110, -1));
+        jPanel1.add(add_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 580, 110, -1));
 
         update_std.setBackground(new java.awt.Color(255, 255, 255));
         update_std.setForeground(new java.awt.Color(0, 0, 0));
         update_std.setText("Update");
+        update_std.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         update_std.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 update_stdActionPerformed(evt);
             }
         });
-        jPanel1.add(update_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 630, 120, 40));
+        jPanel1.add(update_std, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 580, 120, 40));
 
         messageLabel.setBackground(new java.awt.Color(102, 102, 255));
         messageLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         messageLabel.setForeground(new java.awt.Color(255, 51, 0));
         messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         messageLabel.setAutoscrolls(true);
-        jPanel1.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 370, 40));
+        jPanel1.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 60, 370, 40));
 
-        sgenderLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        sgenderLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         sgenderLabel.setForeground(new java.awt.Color(255, 255, 255));
         sgenderLabel.setText("Gender:");
-        jPanel1.add(sgenderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 530, 100, -1));
+        jPanel1.add(sgenderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 480, 100, -1));
 
         s_gender.setBackground(new java.awt.Color(102, 102, 255));
         s_gender.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -458,24 +539,25 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 s_genderActionPerformed(evt);
             }
         });
-        jPanel1.add(s_gender, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 530, 240, 25));
+        jPanel1.add(s_gender, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 480, 240, 25));
 
         teach_detail.setBackground(new java.awt.Color(102, 102, 255));
         teach_detail.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         teach_detail.setForeground(new java.awt.Color(51, 51, 51));
         teach_detail.setText(" Student Detail:");
         teach_detail.setAutoscrolls(true);
-        jPanel1.add(teach_detail, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 360, 50));
+        jPanel1.add(teach_detail, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 360, 50));
 
         clear.setBackground(new java.awt.Color(255, 255, 255));
         clear.setForeground(new java.awt.Color(0, 0, 0));
         clear.setText("Clear");
+        clear.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         clear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearActionPerformed(evt);
             }
         });
-        jPanel1.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 690, 110, -1));
+        jPanel1.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 640, 110, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 770));
 
@@ -483,11 +565,11 @@ public class ManageStudentForm extends javax.swing.JFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         manage_Books.setBackground(new java.awt.Color(255, 255, 255));
-        manage_Books.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        manage_Books.setFont(new java.awt.Font("Cantarell", 1, 36)); // NOI18N
         manage_Books.setForeground(new java.awt.Color(255, 0, 0));
         manage_Books.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Student_Male_100px.png"))); // NOI18N
         manage_Books.setText("Manage Students");
-        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 400, 90));
+        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 400, 90));
 
         jScrollPane1.setBackground(new java.awt.Color(102, 102, 255));
         jScrollPane1.setBorder(null);
@@ -526,10 +608,10 @@ public class ManageStudentForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(studentTable);
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 920, 490));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 200, 930, 490));
 
         jPanel4.setBackground(new java.awt.Color(255, 0, 0));
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 390, 5));
+        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 390, 5));
 
         manageTeacher.setBackground(new java.awt.Color(255, 255, 255));
         manageTeacher.setForeground(new java.awt.Color(0, 0, 0));
@@ -539,7 +621,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 manageTeacherActionPerformed(evt);
             }
         });
-        jPanel3.add(manageTeacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, 150, 50));
+        jPanel3.add(manageTeacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 30, 150, 50));
 
         manageCitizen.setBackground(new java.awt.Color(255, 255, 255));
         manageCitizen.setForeground(new java.awt.Color(0, 0, 0));
@@ -549,7 +631,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 manageCitizenActionPerformed(evt);
             }
         });
-        jPanel3.add(manageCitizen, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 40, 140, 50));
+        jPanel3.add(manageCitizen, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 30, 140, 50));
 
         manageStudent.setBackground(new java.awt.Color(0, 0, 0));
         manageStudent.setBorder(null);
@@ -560,7 +642,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
                 manageStudentActionPerformed(evt);
             }
         });
-        jPanel3.add(manageStudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 150, 50));
+        jPanel3.add(manageStudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 150, 50));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 0, 1010, 770));
 
@@ -571,10 +653,12 @@ public class ManageStudentForm extends javax.swing.JFrame {
     private void delete_stdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delete_stdActionPerformed
         // TODO add your handling code here:
         if(deleteStudent()){
-            messageLabel.setText("Book deleted Successfully");
+            JOptionPane.showMessageDialog(this, "Successfully delete student from database");
             clearTable();
             setStudentDetailTable();
+            clearFields();
         }
+        
         
         
         
@@ -586,9 +670,11 @@ public class ManageStudentForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         
            if(updateStudent()){
-            messageLabel.setText("Book Updated Successfully");
+             JOptionPane.showMessageDialog(this, "Student Record Updated Successfully");
             clearTable();
-            setStudentDetailTable();
+            setStudentDetailTable();    
+            clearFields();
+             
         }
         else{
             messageLabel.setText("Error!, Can't Update Book");
@@ -597,9 +683,10 @@ public class ManageStudentForm extends javax.swing.JFrame {
 
     private void add_stdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_stdActionPerformed
         if(addStudent()){
-            messageLabel.setText("Student Record Added Successfully");
+             JOptionPane.showMessageDialog(this, "Student Record Added Successfully");
             clearTable();
             setStudentDetailTable();
+            clearFields();
         }
        
         
@@ -646,15 +733,29 @@ public class ManageStudentForm extends javax.swing.JFrame {
     private void studentTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_studentTableMouseClicked
         int rowNumber = studentTable.getSelectedRow();
         TableModel model = studentTable.getModel();
-        s_id.setText(model.getValueAt(rowNumber, 0).toString());
-        s_first.setText(model.getValueAt(rowNumber, 1).toString());
-//        s_last.setText(model.getValueAt(rowNumber, 2).toString());
-        s_email.setText(model.getValueAt(rowNumber, 2).toString());
-        s_phone.setText(model.getValueAt(rowNumber, 3).toString());
-        s_address.setText(model.getValueAt(rowNumber, 4).toString());
-        s_institute.setText(model.getValueAt(rowNumber, 5).toString());
-        s_gender.setText(model.getValueAt(rowNumber, 6).toString());
-        s_department.setText(model.getValueAt(rowNumber, 7).toString());
+        int id = Integer.parseInt(model.getValueAt(rowNumber, 0).toString());
+           try{
+           
+          
+           Connection con = DriverManager.getConnection ("jdbc:mysql://localhost:3306/"+databaseName , "root", "");
+           Statement s= con.createStatement();
+           ResultSet rs = s.executeQuery("select * from "+tableName +" where s_id =  " +id);
+           if(rs.next()){
+                    s_id.setText(rs.getString(1));
+                    s_first.setText(rs.getString(2));
+                    s_last.setText(rs.getString(3));
+                    s_email.setText(rs.getString(4));
+                    s_phone.setText(rs.getString(5));
+                    s_address.setText(rs.getString(6));
+                    s_institute.setText(rs.getString(7));         
+                    s_gender.setText(rs.getString(8));
+                    s_department.setText(rs.getString(9));
+           }
+           
+       }catch(Exception e ){
+           e.printStackTrace();
+       
+       }
       
     }//GEN-LAST:event_studentTableMouseClicked
 
@@ -678,16 +779,7 @@ public class ManageStudentForm extends javax.swing.JFrame {
     private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
         // TODO add your handling code here:
         
-        messageLabel.setText("");
-        s_id.setText("");
-        s_first.setText("");
-        s_last.setText("");
-        s_email.setText("");
-        s_phone.setText("");
-        s_institute.setText("");
-        s_department.setText("");
-        s_gender.setText("");
-        s_address.setText("");
+       clearFields();
     }//GEN-LAST:event_clearActionPerformed
 
     private void manageCitizenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageCitizenActionPerformed

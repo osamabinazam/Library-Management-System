@@ -4,6 +4,7 @@
  */
 package jframe;
 
+import DatabaseHandler.DatabaseHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.*;
@@ -21,7 +22,10 @@ public class TeacherRecordForm extends javax.swing.JFrame {
     
     String sID,sFname, sLname,sEmail, sPhone,sAddress,sInstitute,sGender,sDepartment;
     int sFine,sIssue;
-   
+    String databaseName = "library_ms";
+    String tableName = "teachers";
+    String pass = "";
+    DatabaseHandler db = new DatabaseHandler ();
     DefaultTableModel model;
     
     int calltoUpdate =1;
@@ -36,90 +40,86 @@ public class TeacherRecordForm extends javax.swing.JFrame {
     //Method That Fetched Data from Database And set It to table
     
     public void setTeacherDetailTable(){
-        try {
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor"); 
-           
-             Statement stmt= con.createStatement();
-             ResultSet rset= stmt.executeQuery("select * from teacher");
-             
-             while (rset.next()){
-               
-                 String tID= rset.getString(1);
-                 String tFirstname=rset.getString(2);
-                 String tLastname=rset.getString(3);
-                 String tPhone=rset.getString(4);
-                 String tEmail= rset.getString(5);
-                 String tAddress=rset.getString(6);
-                 String tDepartment=rset.getString(7);
-                 String tInstitute=rset.getString(8);
-                 String tGender= rset.getString(9);
-
-                 Object [] obj = {tID,tFirstname,tLastname,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                model = (DefaultTableModel) teacherTable.getModel();
-                model.addRow(obj);
+             try {
                  
-             }
-             
-             
-             
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306","root",pass);
+            if (db.isDatabaseExists(con, databaseName)){
+                                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName, "root", pass);
+                                Statement stmt= con.createStatement();
+                                String querry = "select * from "+ tableName;
+                                ResultSet rset= stmt.executeQuery(querry);
+
+                                while (rset.next()){
+                                 String tID= rset.getString(1);
+                                String tFirst=rset.getString(2);
+                                String tLast = rset.getString(3);
+                                String tPhone=rset.getString(5);
+                                String tEmail= rset.getString(4);
+                                String tAddress=rset.getString(6);
+                                String tDepartment=rset.getString(9);
+                                String tInstitute=rset.getString(7);
+                                String tGender= rset.getString(8);
+
+                                Object [] obj = {tID,tFirst,tLast,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
+                               model = (DefaultTableModel) teacherTable.getModel();
+                               model.addRow(obj);
+                 
+                                }
+            }
         }catch(Exception e )
         {
-            e.printStackTrace();
+                    
         }
+          
     }
+             
+      
     
     //Method That Fetched Detail According to given TeaccherId
     public void searchRecords() {
-            String tId= t_id.getText().trim().toLowerCase();
-            String substr = tId.substring(0, 3);
+            String teachertId="";
+            try{
+                    teachertId = t_id.getText().trim();
+                    Integer.parseInt(teachertId);
             
-            if(tId.isEmpty()){
-                messageLabel.setText("Please Provide Student ID:");
-            }
-            else if (substr.equals("stu")){
-                messageLabel.setText("Please Provide Correct Student ID");
-            }
-            else{
-        
-
+            }catch(Exception e){
+                    messageLabel.setText("Please Provide Correct Student ID ");
+                    setTeacherDetailTable();
             
-
+            }
            
-            try {
-                  Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-                  String sql = "select * from teacher where tid= ? ";
-                  PreparedStatement pst = con.prepareStatement(sql);
-                  pst.setString(1, tId);      
-                  ResultSet rset=pst.executeQuery();
+                try {
+                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root",pass);
+                    String sql = "select * from teachers where t_id= ? ";
+                    PreparedStatement pst = con.prepareStatement(sql);
+                    pst.setString(1, teachertId);
+                    ResultSet rset=pst.executeQuery();
 //                  if (rset.next()){
 //                    messageLabel.setText("Record not found.");
 //                  }
-                  while (rset.next()){
-                 String tID= rset.getString(1);
-                 String tFirstname=rset.getString(2);
-                 String tLastname=rset.getString(3);
-                 String tPhone=rset.getString(4);
-                 String tEmail= rset.getString(5);
-                 String tAddress=rset.getString(6);
-                 String tDepartment=rset.getString(7);
-                 String tInstitute=rset.getString(8);
-                 String tGender= rset.getString(9);
+                    while (rset.next()){
+                        String tID= rset.getString(1);
+                        String tFirstname=rset.getString(2);
+                        String tLastname=rset.getString(3);
+                        String tPhone=rset.getString(5);
+                        String tEmail= rset.getString(4);
+                        String tAddress=rset.getString(6);
+                        String tDepartment=rset.getString(7);
+                        String tInstitute=rset.getString(8);
+                        String tGender= rset.getString(9);
+                        Object [] obj = {tID,tFirstname,tLastname,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
+                        model = (DefaultTableModel) teacherTable.getModel();
+                        model.addRow(obj);
+}
 
-                 Object [] obj = {tID,tFirstname,tLastname,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                    model = (DefaultTableModel) teacherTable.getModel();
-                    model.addRow(obj);
-                  }
-                  
-                
-            }catch(Exception e){
-                
-            }
-            }
+
+                }catch(Exception e){
+                                e.printStackTrace();
+                }
+        
+            
         
     }
-    
     
     //Method to clear Table
     public void clearTable(){

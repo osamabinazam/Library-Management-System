@@ -5,6 +5,7 @@
 package jframe;
 
 //import com.sun.jdi.connect.spi.Connection;
+import DatabaseHandler.DatabaseHandler;
 import java.sql.*;
 import javax.swing.JOptionPane;
 
@@ -18,7 +19,14 @@ public class LoginForm extends javax.swing.JFrame {
 
     /**
      * Creates new form SignUpForm
+     * 
+     * 
      */
+    
+    String databaseName = "library_ms";
+    String tableName ="authentication";
+    String pass= "";
+    DatabaseHandler db = new DatabaseHandler();
     public LoginForm() {
         initComponents();
     }
@@ -54,25 +62,29 @@ public class LoginForm extends javax.swing.JFrame {
        String username=this.username.getText();
        String password=this.password.getText();
        try{
-       
-           Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor"); 
-//           String sql = "insert into users (firstname,lastname,email,phone,address,username,password,age,gender) values (?,?,?,?,?,?,?,?,?)";
-           PreparedStatement pst= con.prepareStatement("select * from users where username = ? and password = ? ");
-           pst.setString(1, username);
-           pst.setString(2, password);
            
-           ResultSet rs= pst.executeQuery();
-           if(rs.next()){
-               messageLabel.setText("Sucessfully Loged in");
-               Home home = new Home();
-               home.setVisible(true);
-               this.dispose();
-           }
-           else{
-               messageLabel.setText("Incorrent Username or Password");
-           }
+           Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306","root",pass); 
+           if (db.isDatabaseExists(con, databaseName)){
+                    con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName,"root", pass);
+                    PreparedStatement pst= con.prepareStatement("select * from "+tableName+"where uname = ? and pass = ? ");
+                    pst.setString(1, username);
+                    pst.setString(2, password);
+           
+                    ResultSet rs= pst.executeQuery();
+                    if(rs.next()){
+                        messageLabel.setText("Sucessfully Loged in");
+                        Home home = new Home();
+                        home.setVisible(true);
+                        this.dispose();
+                    }
+                    else{
+                        messageLabel.setText("Incorrent Username or Password");
+                    }
        
-       
+           }else{
+                    System.out.println("Database is not exist");
+           
+           }
        
        }catch(Exception e){
            e.printStackTrace(); 
@@ -141,7 +153,7 @@ public class LoginForm extends javax.swing.JFrame {
         jLabel6.setText("Login");
         jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 35, 350, 60));
 
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 22)); // NOI18N
+        jLabel14.setFont(new java.awt.Font("Cantarell", 1, 22)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("Username");
         jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 250, 110, -1));
@@ -178,7 +190,7 @@ public class LoginForm extends javax.swing.JFrame {
         jPanel2.add(password, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 380, 360, 50));
         password.getAccessibleContext().setAccessibleName("");
 
-        jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 22)); // NOI18N
+        jLabel15.setFont(new java.awt.Font("Cantarell", 1, 22)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Password");
         jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 350, 110, -1));

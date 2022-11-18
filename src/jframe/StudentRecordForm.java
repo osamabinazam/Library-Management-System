@@ -4,6 +4,7 @@
  */
 package jframe;
 
+import DatabaseHandler.DatabaseHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.*;
@@ -21,7 +22,10 @@ public class StudentRecordForm extends javax.swing.JFrame {
     
     String sID,sFname, sLname,sEmail, sPhone,sAddress,sInstitute,sGender,sDepartment;
     int sFine,sIssue;
-   
+   String databaseName = "library_ms";
+   String tableName ="students";
+   String pass = "";
+   DatabaseHandler db = new DatabaseHandler();
     DefaultTableModel model;
     
     int calltoUpdate =1;
@@ -36,85 +40,84 @@ public class StudentRecordForm extends javax.swing.JFrame {
     //Method That Fetched Data from Database And set It to table
     
     public void setStudentDetailTable(){
-        try {
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor"); 
-           
-             Statement stmt= con.createStatement();
-             ResultSet rset= stmt.executeQuery("select * from student");
-             
-             while (rset.next()){
-               
-                 String sID= rset.getString(1);
-                 String sFullname=rset.getString(2)+ rset.getString(3);
-                 String sPhone=rset.getString(4);
-                 String sEmail= rset.getString(5);
-                 String sAddress=rset.getString(6);
-                 String sDepartment=rset.getString(7);
-                 String sInstitute=rset.getString(8);
-                 String sGender= rset.getString(9);
-
-                 Object [] obj = {sID,sFullname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                model = (DefaultTableModel) studentTable.getModel();
-                model.addRow(obj);
+             try {
                  
-             }
-             
-             
-             
+                 
+                 
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306","root",pass);
+            if (db.isDatabaseExists(con, databaseName)){
+                                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName, "root", pass);
+                                Statement stmt= con.createStatement();
+                                String querry = "select * from "+ tableName;
+                                ResultSet rset= stmt.executeQuery(querry);
+
+                                while (rset.next()){
+                                 String sID= rset.getString(1);
+                                String sFullname=rset.getString(2)+ rset.getString(3);
+                                String sPhone=rset.getString(5);
+                                String sEmail= rset.getString(4);
+                                String sAddress=rset.getString(6);
+                                String sDepartment=rset.getString(9);
+                                String sInstitute=rset.getString(7);
+                                String sGender= rset.getString(8);
+
+                                Object [] obj = {sID,sFullname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
+                               model = (DefaultTableModel) studentTable.getModel();
+                               model.addRow(obj);
+                 
+                                }
+            }
         }catch(Exception e )
         {
-            e.printStackTrace();
+                
         }
+        
+        
+        
     }
     
     public void searchRecords() {
-            String studentId= s_id.getText().trim().toLowerCase();
-            String substr = studentId.substring(0, 2);
+            String studentId="";
+            try{
+                    studentId = s_id.getText().trim();
+                    Integer.parseInt(studentId);
             
-            if(studentId.isEmpty()){
-                messageLabel.setText("Please Provide Student ID:");
-            }
-            else if (substr.equals("stu")){
-                messageLabel.setText("Please Provide Correct Student ID");
-            }
-            else{
-        
-
+            }catch(Exception e){
+                    messageLabel.setText("Please Provide Correct Student ID ");
+                    setStudentDetailTable();
             
-
+            }
            
-            try {
-                  Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-                  String sql = "select * from student where sid= ? ";
-                  PreparedStatement pst = con.prepareStatement(sql);
-                  pst.setString(1, studentId);      
-                  ResultSet rset=pst.executeQuery();
+                try {
+                    Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root",pass);
+                    String sql = "select * from students where s_id= ? ";
+                    PreparedStatement pst = con.prepareStatement(sql);
+                    pst.setString(1, studentId);
+                    ResultSet rset=pst.executeQuery();
 //                  if (rset.next()){
 //                    messageLabel.setText("Record not found.");
 //                  }
-                  while (rset.next()){
-                  String sID= rset.getString(1);
-                 String sFirstname=rset.getString(2);
-                 String sLastname=rset.getString(3);
-                 String sPhone=rset.getString(4);
-                 String sEmail= rset.getString(5);
-                 String sAddress=rset.getString(6);
-                 String sDepartment=rset.getString(7);
-                 String sInstitute=rset.getString(8);
-                 String sGender= rset.getString(9);
+                    while (rset.next()){
+                        String sID= rset.getString(1);
+                        String sFirstname=rset.getString(2);
+                        String sLastname=rset.getString(3);
+                        String sPhone=rset.getString(4);
+                        String sEmail= rset.getString(5);
+                        String sAddress=rset.getString(6);
+                        String sDepartment=rset.getString(7);
+                        String sInstitute=rset.getString(8);
+                        String sGender= rset.getString(9);
+                        Object [] obj = {sID,sFirstname,sLastname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
+                        model = (DefaultTableModel) studentTable.getModel();
+                        model.addRow(obj);
+}
 
-                 Object [] obj = {sID,sFirstname,sLastname,sEmail,sPhone,sAddress,sInstitute,sGender,sDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                model = (DefaultTableModel) studentTable.getModel();
-                model.addRow(obj);
-                  }
-                  
-                
-            }catch(Exception e){
-                
-            }
-            }
+
+                }catch(Exception e){
+                                e.printStackTrace();
+                }
+        
+            
         
     }
     
@@ -206,10 +209,10 @@ public class StudentRecordForm extends javax.swing.JFrame {
         jPanel1.add(manageCitizen, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 20, 120, 40));
 
         jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 140, 270, 5));
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 140, 270, 5));
 
         teach_detail1.setBackground(new java.awt.Color(102, 102, 255));
-        teach_detail1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
+        teach_detail1.setFont(new java.awt.Font("Cantarell", 1, 36)); // NOI18N
         teach_detail1.setForeground(new java.awt.Color(255, 255, 255));
         teach_detail1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         teach_detail1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Literature_100px_1.png"))); // NOI18N
@@ -264,16 +267,16 @@ public class StudentRecordForm extends javax.swing.JFrame {
         messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel1.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 70, 590, 40));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1370, 200));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1370, 180));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         manage_Books.setBackground(new java.awt.Color(255, 255, 255));
-        manage_Books.setFont(new java.awt.Font("Cantarell", 1, 36)); // NOI18N
+        manage_Books.setFont(new java.awt.Font("Cantarell", 1, 30)); // NOI18N
         manage_Books.setForeground(new java.awt.Color(102, 102, 255));
         manage_Books.setText("Students Record:");
-        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 0, 320, 60));
+        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 0, 320, 50));
 
         jScrollPane1.setBackground(new java.awt.Color(102, 102, 255));
         jScrollPane1.setBorder(null);
@@ -312,12 +315,12 @@ public class StudentRecordForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(studentTable);
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 1320, 450));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 1320, 450));
 
         jPanel4.setBackground(new java.awt.Color(102, 102, 255));
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 50, 280, 5));
+        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 50, 230, 5));
 
-        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 200, 1400, 570));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 180, 1400, 570));
 
         pack();
         setLocationRelativeTo(null);

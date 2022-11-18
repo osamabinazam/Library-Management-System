@@ -4,6 +4,7 @@
  */
 package jframe;
 
+import DatabaseHandler.DatabaseHandler;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.*;
@@ -23,49 +24,52 @@ public class ManageTeacherForm extends javax.swing.JFrame {
     int sFine,sIssue;
    
     DefaultTableModel model;
+    final String databaseName = "library_ms";
+    final String tableName ="teachers";
+    DatabaseHandler  db = new DatabaseHandler();
     
     int calltoUpdate =1;
 
     
     public ManageTeacherForm() {
         initComponents();
-        setStudentDetailTable(); 
+        setTeacherDetailTable();
     }
     
     
     //Method That Fetched Data from Database And set It to table
     
-    public void setStudentDetailTable(){
-        try {
-            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor"); 
-           
-             Statement stmt= con.createStatement();
-             ResultSet rset= stmt.executeQuery("select * from teacher");
-             
-             while (rset.next()){
-               
-                 String tID= rset.getString(1);
-                 String tFullname=rset.getString(2)+ rset.getString(3);
-                 String tPhone=rset.getString(4);
-                 String tEmail= rset.getString(5);
-                 String tAddress=rset.getString(6);
-                 String tDepartment=rset.getString(7);
-                 String tInstitute=rset.getString(8);
-                 String tGender= rset.getString(9);
-
-                 Object [] obj = {tID,tFullname,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
-//                Object [] obj = {"1","2","3","4","5","200","500"};
-                model = (DefaultTableModel) teacherTable.getModel();
-                model.addRow(obj);
+   public void setTeacherDetailTable(){
+             try {
                  
-             }
-             
-             
-             
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306","root","");
+            if (db.isDatabaseExists(con, databaseName)){
+                                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName, "root", "");
+                                Statement stmt= con.createStatement();
+                                String querry = "select * from "+ tableName;
+                                ResultSet rset= stmt.executeQuery(querry);
+
+                                while (rset.next()){
+                                 String tID= rset.getString(1);
+                                String tFullname=rset.getString(2)+ rset.getString(3);
+                                String tPhone=rset.getString(5);
+                                String tEmail= rset.getString(4);
+                                String tAddress=rset.getString(6);
+                                String tDepartment=rset.getString(9);
+                                String tInstitute=rset.getString(7);
+                                String tGender= rset.getString(8);
+
+                                Object [] obj = {tID,tFullname,tEmail,tPhone,tAddress,tInstitute,tGender,tDepartment,"200","500"};
+                               model = (DefaultTableModel) teacherTable.getModel();
+                               model.addRow(obj);
+                 
+                                }
+            }
         }catch(Exception e )
         {
-            e.printStackTrace();
+                    
         }
+          
     }
     //To add book to booktable
     public boolean addStudent(){
@@ -77,51 +81,105 @@ public class ManageTeacherForm extends javax.swing.JFrame {
             return isAdded;
         }
         else{
-        
-        
-        tID= t_id.getText();
-        tFname=t_first.getText();
-        tLname= t_last.getText();
-        tEmail= t_email.getText();
-        tPhone=t_phone.getText();
-        tAddress=t_address.getText();
-        tInstitute=t_institute.getText();
-        tDepartment=t_department.getText();
-        tGender=t_gender.getText();
-        if (checkException) {
-            try {
 
-                Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-                String sql = "insert into teacher values (?,?,?,?,?,?,?,?,?,?,?)";
-                PreparedStatement pst = conc.prepareStatement(sql);
-                pst.setString(1, tID );
-                pst.setString(2, tFname);
-                pst.setString(3, tLname);
-                pst.setString(4, tPhone);
-                pst.setString(5, tEmail);
-                pst.setString(6, tAddress );
-                pst.setString(7, tDepartment);
-                pst.setString(8, tInstitute);
-                pst.setString(9, tGender);
-                pst.setInt(10, 22);
-                pst.setInt(11, 2);
 
-                int rowcount = pst.executeUpdate();
-                if (rowcount > 0) {
-                    isAdded = true;
-                } else {
-                    isAdded = false;
-                }
+                    tID= t_id.getText();
+                    tFname=t_first.getText();
+                    tLname= t_last.getText();
+                    tEmail= t_email.getText();
+                    tPhone=t_phone.getText();
+                    tAddress=t_address.getText();
+                    tInstitute=t_institute.getText();
+                    tDepartment=t_department.getText();
+                    tGender=t_gender.getText();
+                    
+                     if (checkException) {
+                                          try {
 
+                            Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root","");            //Creating Connection to database
+                             String url = "jdbc:mysql://localhost:3306/"+databaseName; 
+                             if (db.isDatabaseExists(conc, databaseName ) ){
+                                     
+                                          if(db.isTableExists(conc, tableName)){
+                                                   
+                                                    Connection newConnection = DriverManager.getConnection(url ,"root", "");            
+                                                    String sql = "insert into "+ tableName+" values (?,?,?,?,?,?,?,?,?,?,?)";                     //Creating Querry as a String
+                                                    PreparedStatement pst = newConnection.prepareStatement(sql);      //Prepare Our Querry and setting values to indicies
+                                                  pst.setString(1,    tID );
+                                                    pst.setString(2, tFname);
+                                                    pst.setString(3, tLname);
+                                                    pst.setString(4, tEmail);
+                                                    pst.setString(5, tPhone);
+                                                    pst.setString(6, tAddress );
+                                                    pst.setString(7, tInstitute);
+                                                    pst.setString(8, tGender);
+                                                    pst.setString(9, tDepartment);
+                                                    pst.setInt(10, 200);
+                                                    pst.setInt(11,2);
+                                                    int rowcount = pst.executeUpdate();
+                                                    if (rowcount > 0) {
+                                                        isAdded = true;
+                                                    } else {
+                                                        isAdded = false;
+                                                    }
+                                         }else {
+                                                    System.out.println("Creating Table " + tableName);
+                                                    //Creating Table in Case when table is not created in database
+                                                    //Attributes of the Table
+                                                   String attributes ="CREATE TABLE  teachers (\n"
+                                                            + "t_id integer PRIMARY KEY,\n"
+                                                            + "t_fname  varchar(25),\n"
+                                                            + "t_lname varchar(25),\n"
+                                                            + "t_email    varchar(50),\n"
+                                                            + "t_phone varchar(20),\n"
+                                                            + "t_address varchar(100),\n"
+                                                           + "t_institute varchar(100)\n,"
+                                                            + "t_gender varchar(1),\n"
+                                                           + "t_department varchar(100),\n"
+                                                           + "t_fine integer,\n"
+                                                           + "t_issue integer);\n";
+
+                                                 db.createTable(conc, databaseName, tableName,attributes );        //Calling createTable method of DatabaseHandler Class
+                                                 Connection newConnection = DriverManager.getConnection(url ,"root", "");            
+
+                                                    String sql = "insert into "+ tableName+" values (?,?,?,?,?,?,?,?,?,?,?)";                     //Creating Querry as a String
+
+                                                    PreparedStatement pst = newConnection.prepareStatement(sql);      //Prepare Our Querry and setting values to indicies
+                                                    pst.setString(1,    tID );
+                                                    pst.setString(2, tFname);
+                                                    pst.setString(3, tLname);
+                                                    pst.setString(4, tEmail);
+                                                    pst.setString(5, tPhone);
+                                                    pst.setString(6, tAddress );
+                                                    pst.setString(7, tInstitute);
+                                                    pst.setString(8, tGender);
+                                                    pst.setString(9, tDepartment);
+                                                    pst.setInt(10,200);
+                                                    pst.setInt(11,2);
+
+                                                    int rowcount = pst.executeUpdate();
+                                                    if (rowcount > 0) {
+                                                        isAdded = true;
+                                                    } else {
+                                                        isAdded = false;
+                                                    }
+                                          }
+                              }else{
+                                        System.out.println ("Database is not Exist so creating database");;
+                 
+                    }
             } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+                    e.printStackTrace();
+            } //end of try and Catch block
+         }
+                    
+                    
+                    
+                    
+                    
+                    
         
-        System.out.println(isAdded);
-           
-        
-     return isAdded;
+        return isAdded;
      }
     }
     
@@ -149,17 +207,17 @@ public class ManageTeacherForm extends javax.swing.JFrame {
         tGender=t_gender.getText();
         
         try{
-            Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor");
-           String sql = "update teacher set fname = ?, lname = ? , phone = ?, emial = ?, address = ? , depart = ? , institute = ? , gender =  ? ";
+            Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","");
+           String sql = "update teachers set t_fname = ?, t_lname = ? , t_phone = ?, t_email = ?, t_address = ? , t_institute = ? , t_gender = ? ,t_department =  ? where t_id =  " + tID;
            PreparedStatement pst = conc.prepareStatement(sql);
            pst.setString(1, tFname);
            pst.setString(2, tLname);
            pst.setString(3, tPhone);
            pst.setString(4, tEmail);
            pst.setString(5, tAddress);
-           pst.setString(6, tDepartment);
-           pst.setString(7, tInstitute);
-           pst.setString(8, tGender);
+           pst.setString(6, tInstitute);
+           pst.setString(7, tGender);
+           pst.setString(8, tDepartment);
 //            
             int rowcount = pst.executeUpdate();
             if(rowcount> 0){
@@ -179,11 +237,12 @@ public class ManageTeacherForm extends javax.swing.JFrame {
     
     public boolean deleteTeacher(){
         boolean isDeleted = false;
+          
           tID= t_id.getText();
           
           try{
-             Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms","root","toor");
-            String sql = "delete from Teacher where tid = ? ";
+             Connection conc=DriverManager.getConnection("jdbc:mysql://localhost:3306/"+databaseName,"root","");
+            String sql = "delete from "+tableName+" where t_id = ? ";
             PreparedStatement pst = conc.prepareStatement(sql);
             pst.setString(1,tID);
             
@@ -195,14 +254,26 @@ public class ManageTeacherForm extends javax.swing.JFrame {
             }
             
           }catch (Exception e ){
-              
+                    e.printStackTrace();
           }
         
         return isDeleted;
     }
     
     
+    public void clearFields(){
     
+             messageLabel.setText("");
+        t_id.setText("");
+        t_first.setText("");
+        t_last.setText("");
+        t_email.setText("");
+        t_phone.setText("");
+        t_institute.setText("");
+        t_department.setText("");
+        t_gender.setText("");
+        t_address.setText("");
+    }
     
     
 
@@ -282,12 +353,12 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_departmentActionPerformed(evt);
             }
         });
-        jPanel1.add(t_department, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 570, 240, 25));
+        jPanel1.add(t_department, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 540, 240, 25));
 
-        tdepartmentLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tdepartmentLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tdepartmentLabel.setForeground(new java.awt.Color(255, 255, 255));
         tdepartmentLabel.setText("Department:");
-        jPanel1.add(tdepartmentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 570, 100, -1));
+        jPanel1.add(tdepartmentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 540, 100, -1));
 
         t_id.setBackground(new java.awt.Color(102, 102, 255));
         t_id.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -299,7 +370,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_idActionPerformed(evt);
             }
         });
-        jPanel1.add(t_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 250, 240, 25));
+        jPanel1.add(t_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 220, 240, 25));
 
         t_first.setBackground(new java.awt.Color(102, 102, 255));
         t_first.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -311,7 +382,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_firstActionPerformed(evt);
             }
         });
-        jPanel1.add(t_first, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 290, 240, 25));
+        jPanel1.add(t_first, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 260, 240, 25));
 
         t_last.setBackground(new java.awt.Color(102, 102, 255));
         t_last.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -323,7 +394,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_lastActionPerformed(evt);
             }
         });
-        jPanel1.add(t_last, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 330, 240, 25));
+        jPanel1.add(t_last, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 300, 240, 25));
 
         t_email.setBackground(new java.awt.Color(102, 102, 255));
         t_email.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -335,7 +406,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_emailActionPerformed(evt);
             }
         });
-        jPanel1.add(t_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 370, 240, 25));
+        jPanel1.add(t_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 340, 240, 25));
 
         t_phone.setBackground(new java.awt.Color(102, 102, 255));
         t_phone.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -347,7 +418,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_phoneActionPerformed(evt);
             }
         });
-        jPanel1.add(t_phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 410, 240, 25));
+        jPanel1.add(t_phone, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 380, 240, 25));
 
         t_address.setBackground(new java.awt.Color(102, 102, 255));
         t_address.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -359,37 +430,37 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_addressActionPerformed(evt);
             }
         });
-        jPanel1.add(t_address, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 450, 240, 25));
+        jPanel1.add(t_address, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 420, 240, 25));
 
-        tidLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tidLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tidLabel.setForeground(new java.awt.Color(255, 255, 255));
         tidLabel.setText("Teacher ID:");
-        jPanel1.add(tidLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 100, -1));
+        jPanel1.add(tidLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 220, 100, -1));
 
-        fnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        fnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         fnameLabel.setForeground(new java.awt.Color(255, 255, 255));
         fnameLabel.setText("First Name:");
-        jPanel1.add(fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 100, -1));
+        jPanel1.add(fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 260, 100, -1));
 
-        lnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        lnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         lnameLabel.setForeground(new java.awt.Color(255, 255, 255));
         lnameLabel.setText("Last Name:");
-        jPanel1.add(lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 100, -1));
+        jPanel1.add(lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 100, -1));
 
-        temailLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        temailLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         temailLabel.setForeground(new java.awt.Color(255, 255, 255));
         temailLabel.setText("Email Address:");
-        jPanel1.add(temailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, 110, -1));
+        jPanel1.add(temailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, 110, -1));
 
-        tphoneLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tphoneLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tphoneLabel.setForeground(new java.awt.Color(255, 255, 255));
         tphoneLabel.setText("Phone No:");
-        jPanel1.add(tphoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, 100, -1));
+        jPanel1.add(tphoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 380, 100, -1));
 
-        taddressLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        taddressLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         taddressLabel.setForeground(new java.awt.Color(255, 255, 255));
         taddressLabel.setText("Address:");
-        jPanel1.add(taddressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 120, -1));
+        jPanel1.add(taddressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 420, 120, -1));
 
         t_institute.setBackground(new java.awt.Color(102, 102, 255));
         t_institute.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -401,12 +472,12 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_instituteActionPerformed(evt);
             }
         });
-        jPanel1.add(t_institute, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 490, 240, 25));
+        jPanel1.add(t_institute, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 460, 240, 25));
 
-        tinstituteLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tinstituteLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tinstituteLabel.setForeground(new java.awt.Color(255, 255, 255));
         tinstituteLabel.setText("Institute:");
-        jPanel1.add(tinstituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 100, -1));
+        jPanel1.add(tinstituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 460, 100, -1));
 
         delete_teacher.setBackground(new java.awt.Color(255, 51, 0));
         delete_teacher.setForeground(new java.awt.Color(0, 0, 0));
@@ -416,7 +487,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 delete_teacherActionPerformed(evt);
             }
         });
-        jPanel1.add(delete_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 630, 110, -1));
+        jPanel1.add(delete_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 600, 110, -1));
 
         add_teacher.setBackground(new java.awt.Color(255, 255, 255));
         add_teacher.setForeground(new java.awt.Color(0, 0, 0));
@@ -426,7 +497,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 add_teacherActionPerformed(evt);
             }
         });
-        jPanel1.add(add_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 630, 110, -1));
+        jPanel1.add(add_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 600, 110, -1));
 
         update_teacher.setBackground(new java.awt.Color(255, 255, 255));
         update_teacher.setForeground(new java.awt.Color(0, 0, 0));
@@ -436,19 +507,19 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 update_teacherActionPerformed(evt);
             }
         });
-        jPanel1.add(update_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 630, 120, 40));
+        jPanel1.add(update_teacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 600, 120, 40));
 
         messageLabel.setBackground(new java.awt.Color(102, 102, 255));
         messageLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         messageLabel.setForeground(new java.awt.Color(255, 51, 0));
         messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         messageLabel.setAutoscrolls(true);
-        jPanel1.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 370, 40));
+        jPanel1.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 370, 40));
 
-        tgenderLabel.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        tgenderLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tgenderLabel.setForeground(new java.awt.Color(255, 255, 255));
         tgenderLabel.setText("Gender:");
-        jPanel1.add(tgenderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 530, 100, -1));
+        jPanel1.add(tgenderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 500, 100, -1));
 
         t_gender.setBackground(new java.awt.Color(102, 102, 255));
         t_gender.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
@@ -460,14 +531,14 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 t_genderActionPerformed(evt);
             }
         });
-        jPanel1.add(t_gender, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 530, 240, 25));
+        jPanel1.add(t_gender, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 500, 240, 25));
 
         teach_detail.setBackground(new java.awt.Color(102, 102, 255));
         teach_detail.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         teach_detail.setForeground(new java.awt.Color(51, 51, 51));
         teach_detail.setText(" Teacher Detail:");
         teach_detail.setAutoscrolls(true);
-        jPanel1.add(teach_detail, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 360, 50));
+        jPanel1.add(teach_detail, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, 360, 50));
 
         clear.setBackground(new java.awt.Color(255, 255, 255));
         clear.setForeground(new java.awt.Color(0, 0, 0));
@@ -477,7 +548,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 clearActionPerformed(evt);
             }
         });
-        jPanel1.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 690, 110, -1));
+        jPanel1.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 660, 110, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 390, 770));
 
@@ -485,11 +556,11 @@ public class ManageTeacherForm extends javax.swing.JFrame {
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         manage_Books.setBackground(new java.awt.Color(255, 255, 255));
-        manage_Books.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        manage_Books.setFont(new java.awt.Font("Cantarell", 1, 36)); // NOI18N
         manage_Books.setForeground(new java.awt.Color(255, 0, 0));
         manage_Books.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Student_Male_100px.png"))); // NOI18N
         manage_Books.setText("Manage Teachers");
-        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 400, 90));
+        jPanel3.add(manage_Books, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 400, 90));
 
         jScrollPane1.setBackground(new java.awt.Color(102, 102, 255));
         jScrollPane1.setBorder(null);
@@ -528,7 +599,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(teacherTable);
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 940, 490));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 940, 500));
 
         manageTeacher.setBackground(new java.awt.Color(0, 0, 0));
         manageTeacher.setBorder(null);
@@ -539,7 +610,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 manageTeacherActionPerformed(evt);
             }
         });
-        jPanel3.add(manageTeacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 40, 150, 50));
+        jPanel3.add(manageTeacher, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 30, 150, 50));
 
         manageCitizen.setBackground(new java.awt.Color(255, 255, 255));
         manageCitizen.setBorder(null);
@@ -550,7 +621,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 manageCitizenActionPerformed(evt);
             }
         });
-        jPanel3.add(manageCitizen, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 40, 140, 50));
+        jPanel3.add(manageCitizen, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 30, 140, 50));
 
         manageStudent.setBackground(new java.awt.Color(255, 255, 255));
         manageStudent.setBorder(null);
@@ -561,10 +632,10 @@ public class ManageTeacherForm extends javax.swing.JFrame {
                 manageStudentActionPerformed(evt);
             }
         });
-        jPanel3.add(manageStudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 40, 150, 50));
+        jPanel3.add(manageStudent, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 30, 150, 50));
 
         jPanel4.setBackground(new java.awt.Color(255, 0, 0));
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 390, 5));
+        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 390, 5));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 0, 1010, 770));
 
@@ -575,9 +646,10 @@ public class ManageTeacherForm extends javax.swing.JFrame {
     private void delete_teacherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delete_teacherActionPerformed
         // TODO add your handling code here:
         if(deleteTeacher()){
-            messageLabel.setText("Book deleted Successfully");
+            JOptionPane.showMessageDialog(this,"Teacher deleted Successfully");
             clearTable();
-            setStudentDetailTable();
+            setTeacherDetailTable();
+            clearFields();
         }
         
         
@@ -590,20 +662,22 @@ public class ManageTeacherForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         
            if(updateTeacher()){
-            messageLabel.setText("Book Updated Successfully");
+            JOptionPane.showMessageDialog(this,"Teacher Record  Updated Successfully");
             clearTable();
-            setStudentDetailTable();
+            setTeacherDetailTable();
+            clearFields();
         }
         else{
-            messageLabel.setText("Error!, Can't Update Book");
+           JOptionPane.showMessageDialog(this,"Error!, Can't Update Teacher Record");
         }
     }//GEN-LAST:event_update_teacherActionPerformed
 
     private void add_teacherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_teacherActionPerformed
         if(addStudent()){
-            messageLabel.setText("Student Record Added Successfully");
+            JOptionPane.showMessageDialog(this,"Teacher Record Added Successfully");
             clearTable();
-            setStudentDetailTable();
+            setTeacherDetailTable();
+            clearFields();
         }
        
         
@@ -687,16 +761,7 @@ public class ManageTeacherForm extends javax.swing.JFrame {
 
     private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
         // TODO add your handling code here:
-        messageLabel.setText("");
-        t_id.setText("");
-        t_first.setText("");
-        t_last.setText("");
-        t_email.setText("");
-        t_phone.setText("");
-        t_institute.setText("");
-        t_department.setText("");
-        t_gender.setText("");
-        t_address.setText("");
+       clearFields();
     }//GEN-LAST:event_clearActionPerformed
 
     

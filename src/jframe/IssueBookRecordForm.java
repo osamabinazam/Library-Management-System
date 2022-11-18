@@ -29,7 +29,7 @@ public class IssueBookRecordForm extends javax.swing.JFrame {
 
     public void setIssueBooksDetailTable() {
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
+            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "");
 
             Statement stmt = con.createStatement();
             ResultSet rset = stmt.executeQuery("select * from borrow");
@@ -70,7 +70,7 @@ public class IssueBookRecordForm extends javax.swing.JFrame {
             java.sql.Date dfromDate = new java.sql.Date(lfrom);
             java.sql.Date dtoDate = new java.sql.Date(lto);
             try {
-                  Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
+                  Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "");
                   String sql = "select * from borrows where isssue_date between ? and ? ";
                   PreparedStatement pst = con.prepareStatement(sql);
                   pst.setDate(1, dfromDate);
@@ -165,7 +165,7 @@ public class IssueBookRecordForm extends javax.swing.JFrame {
         BookDetailsPanel.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 140, 270, 5));
 
         teach_detail1.setBackground(new java.awt.Color(102, 102, 255));
-        teach_detail1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
+        teach_detail1.setFont(new java.awt.Font("Cantarell", 1, 30)); // NOI18N
         teach_detail1.setForeground(new java.awt.Color(255, 255, 255));
         teach_detail1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         teach_detail1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Literature_100px_1.png"))); // NOI18N
@@ -269,10 +269,10 @@ public class IssueBookRecordForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(issueRecordTable);
 
-        viewRecordPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1330, 460));
+        viewRecordPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 1330, 430));
 
         Label.setBackground(new java.awt.Color(102, 102, 255));
-        Label.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        Label.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
         Label.setForeground(new java.awt.Color(102, 102, 255));
         Label.setText("Details:");
         viewRecordPanel.add(Label, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 10, 400, 50));

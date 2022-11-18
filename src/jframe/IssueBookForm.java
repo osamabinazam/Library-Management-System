@@ -19,30 +19,33 @@ import javax.swing.table.TableModel;
  *
  */
 public class IssueBookForm extends javax.swing.JFrame {
+    
+    int index=0;
 
     public IssueBookForm() {
         initComponents();
+//        getBookDetails();
     }
 
     //Fetch Book Details From Database and set it to book details Panel
     public void getBookDetails() {
         int bId = Integer.parseInt(b_id.getText().trim());
         try {
-            Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-            String sql = "select * from books where book_id = ?";
+            Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "");
+            String sql = "select * from books where id = ?";
             PreparedStatement pst = conc.prepareStatement(sql);
             pst.setInt(1, bId);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
 //                String bookId = String.parseString(rs.getInt("book_id"));
-                b_idLabel.setText(rs.getString("book_id"));
-                b_titleLabel.setText(rs.getString("book_title"));
-                b_authorLabel.setText(rs.getString("book_author"));
-                b_editionLabel.setText(rs.getString("book_edition"));
-                b_copiesLabel.setText(rs.getString("book_copies"));
-                b_availableLabel.setText(rs.getString("book_available"));
-                b_publisherLabel.setText(rs.getString("book_publisher"));
-                b_costLabel.setText(rs.getString("book_price"));
+                b_idLabel.setText(rs.getString("id"));
+                b_titleLabel.setText(rs.getString("title"));
+                b_authorLabel.setText(rs.getString("author"));
+                b_editionLabel.setText(rs.getString("edition"));
+                b_copiesLabel.setText(rs.getString("copies"));
+                b_availableLabel.setText(rs.getString("avg_copies"));
+                b_publisherLabel.setText(rs.getString("publisher"));
+                b_costLabel.setText(rs.getString("cost"));
             }
 
             System.out.println("Successfully Fetched Book From Database......\n\n");
@@ -71,29 +74,18 @@ public class IssueBookForm extends javax.swing.JFrame {
 
     //Method That Fetched Detail of Student from database
     public void getBorrowerDetails() {
-        String Id = borrower_id.getText().trim().toLowerCase();
-        String Substr = Id.substring(0, 3);
-        System.out.println("Sub Sting : " + Substr);
+        String Id = borrower_id.getText();
+          if (index ==0 )
+                    {}
+          else if (index ==1) 
+          {}
+                    //Teacher
+          else if (index ==2 )
+                        changeLabel();
 
         try {
             Connection conc = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_ms", "root", "toor");
-
-            String sql = "";
-
-            if (Substr.equals("stu")) {
-                revertLabel();
-                sql = "select * from student where sid = ?";
-            } else if (Substr.equals("tch")) {
-                revertLabel();
-                sql = "select * from teacher where tid = ? ";
-            } else if (Substr.equals("ctz")) {
-                changeLabel();
-                getCitizensDetails();
-                return;
-
-            }
-
-            PreparedStatement pst = conc.prepareStatement(sql);
+            PreparedStatement pst = conc.prepareStatement("");
             pst.setString(1, Id);
             ResultSet rst = pst.executeQuery();
             System.out.println("Before While");
@@ -295,6 +287,7 @@ public class IssueBookForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         BookDetailsPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         back = new javax.swing.JLabel();
@@ -352,6 +345,8 @@ public class IssueBookForm extends javax.swing.JFrame {
         issue_date = new rojeru_san.componentes.RSDateChooser();
         issue_book = new necesario.MaterialButton();
         clear = new necesario.MaterialButton();
+        borrower = new rojerusan.RSComboMetro();
+        fnameLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Manage Books");
@@ -374,43 +369,43 @@ public class IssueBookForm extends javax.swing.JFrame {
 
         BookDetailsPanel.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 80, 60));
 
-        tidLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        tidLabel.setForeground(new java.awt.Color(255, 255, 255));
+        tidLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        tidLabel.setForeground(new java.awt.Color(255, 51, 51));
         tidLabel.setText("ID:");
         BookDetailsPanel.add(tidLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 70, -1));
 
-        fnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        fnameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        fnameLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        fnameLabel.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel.setText("Title:");
         BookDetailsPanel.add(fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 70, -1));
 
-        lnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        lnameLabel.setForeground(new java.awt.Color(255, 255, 255));
+        lnameLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        lnameLabel.setForeground(new java.awt.Color(255, 51, 51));
         lnameLabel.setText("Author:");
         BookDetailsPanel.add(lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, 70, -1));
 
-        temailLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        temailLabel.setForeground(new java.awt.Color(255, 255, 255));
+        temailLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        temailLabel.setForeground(new java.awt.Color(255, 51, 51));
         temailLabel.setText("Edition:");
         BookDetailsPanel.add(temailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, 70, -1));
 
-        tphoneLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        tphoneLabel.setForeground(new java.awt.Color(255, 255, 255));
+        tphoneLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        tphoneLabel.setForeground(new java.awt.Color(255, 51, 51));
         tphoneLabel.setText("Copies:");
         BookDetailsPanel.add(tphoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 70, -1));
 
-        taddressLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        taddressLabel.setForeground(new java.awt.Color(255, 255, 255));
+        taddressLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        taddressLabel.setForeground(new java.awt.Color(255, 51, 51));
         taddressLabel.setText("Available:");
         BookDetailsPanel.add(taddressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 80, -1));
 
-        tinstituteLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        tinstituteLabel.setForeground(new java.awt.Color(255, 255, 255));
+        tinstituteLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        tinstituteLabel.setForeground(new java.awt.Color(255, 51, 51));
         tinstituteLabel.setText("Publisher:");
         BookDetailsPanel.add(tinstituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 530, 80, -1));
 
-        tgenderLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        tgenderLabel.setForeground(new java.awt.Color(255, 255, 255));
+        tgenderLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        tgenderLabel.setForeground(new java.awt.Color(255, 51, 51));
         tgenderLabel.setText("Cost:");
         BookDetailsPanel.add(tgenderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 570, 70, -1));
 
@@ -424,42 +419,42 @@ public class IssueBookForm extends javax.swing.JFrame {
         BookDetailsPanel.add(teach_detail, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 370, 90));
 
         b_costLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_costLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_costLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_costLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_costLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 570, 250, 25));
 
         b_idLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_idLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_idLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_idLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_idLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 290, 250, 25));
 
         b_titleLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_titleLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_titleLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_titleLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_titleLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 330, 250, 25));
 
         b_authorLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_authorLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_authorLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_authorLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_authorLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 370, 250, 25));
 
         b_editionLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_editionLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_editionLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_editionLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_editionLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 410, 250, 25));
 
         b_copiesLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_copiesLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_copiesLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_copiesLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_copiesLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 450, 250, 25));
 
         b_availableLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_availableLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_availableLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_availableLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_availableLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 490, 250, 25));
 
         b_publisherLabel.setBackground(new java.awt.Color(102, 102, 255));
-        b_publisherLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_publisherLabel.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_publisherLabel.setForeground(new java.awt.Color(255, 255, 255));
         BookDetailsPanel.add(b_publisherLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 530, 250, 25));
 
@@ -471,48 +466,48 @@ public class IssueBookForm extends javax.swing.JFrame {
         StudentDetailPanel.setBackground(new java.awt.Color(215, 215, 215));
         StudentDetailPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tidLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        tidLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tidLabel1.setForeground(new java.awt.Color(255, 51, 51));
         tidLabel1.setText("ID:");
         StudentDetailPanel.add(tidLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 290, 80, -1));
 
-        fnameLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         fnameLabel1.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel1.setText("First Name:");
         StudentDetailPanel.add(fnameLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 90, -1));
 
-        lnameLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        lnameLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         lnameLabel1.setForeground(new java.awt.Color(255, 51, 51));
         lnameLabel1.setText("Last Name:");
         StudentDetailPanel.add(lnameLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, -1, -1));
 
-        temailLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        temailLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         temailLabel1.setForeground(new java.awt.Color(255, 51, 51));
         temailLabel1.setText("Email:");
         StudentDetailPanel.add(temailLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 410, 80, -1));
 
-        tphoneLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        tphoneLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         tphoneLabel1.setForeground(new java.awt.Color(255, 51, 51));
         tphoneLabel1.setText("Phone:");
         StudentDetailPanel.add(tphoneLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 450, 80, -1));
 
-        taddressLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        taddressLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         taddressLabel1.setForeground(new java.awt.Color(255, 51, 51));
         taddressLabel1.setText("Address:");
         StudentDetailPanel.add(taddressLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 490, 80, -1));
 
-        binstituteLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        binstituteLabel1.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         binstituteLabel1.setForeground(new java.awt.Color(255, 51, 51));
         binstituteLabel1.setText("Institute:");
         StudentDetailPanel.add(binstituteLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 530, 80, -1));
 
-        bgender.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        bgender.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         bgender.setForeground(new java.awt.Color(255, 51, 51));
         bgender.setText("Gender:");
         StudentDetailPanel.add(bgender, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 610, 70, -1));
 
         teach_detail1.setBackground(new java.awt.Color(102, 102, 255));
-        teach_detail1.setFont(new java.awt.Font("Segoe UI", 1, 30)); // NOI18N
+        teach_detail1.setFont(new java.awt.Font("Cantarell", 1, 30)); // NOI18N
         teach_detail1.setForeground(new java.awt.Color(255, 51, 51));
         teach_detail1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         teach_detail1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Student_Male_100px.png"))); // NOI18N
@@ -521,52 +516,52 @@ public class IssueBookForm extends javax.swing.JFrame {
         StudentDetailPanel.add(teach_detail1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 360, 100));
 
         br_genderLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_genderLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_genderLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_genderLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_genderLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 610, 220, 25));
 
         br_idLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_idLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_idLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_idLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_idLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 290, 230, 25));
 
         br_fnameLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_fnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_fnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_fnameLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_fnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 330, 230, 25));
 
         br_lnameLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_lnameLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_lnameLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_lnameLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_lnameLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 370, 230, 25));
 
         br_emailLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_emailLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_emailLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_emailLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_emailLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 410, 230, 25));
 
         br_phoneLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_phoneLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_phoneLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_phoneLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_phoneLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 450, 230, 25));
 
         br_addressLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_addressLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_addressLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_addressLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_addressLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 490, 230, 25));
 
         br_instituteLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_instituteLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_instituteLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_instituteLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_instituteLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 530, 230, 25));
 
-        bdepart.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        bdepart.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         bdepart.setForeground(new java.awt.Color(255, 51, 51));
         bdepart.setText("Department:");
         StudentDetailPanel.add(bdepart, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 570, 110, -1));
 
         br_departmentLabel.setBackground(new java.awt.Color(102, 102, 255));
-        br_departmentLabel.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        br_departmentLabel.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
         br_departmentLabel.setForeground(new java.awt.Color(0, 0, 0));
         StudentDetailPanel.add(br_departmentLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 570, 220, 25));
 
@@ -578,13 +573,13 @@ public class IssueBookForm extends javax.swing.JFrame {
         IssueBookPanel.setBackground(new java.awt.Color(255, 255, 255));
         IssueBookPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        fnameLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel2.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         fnameLabel2.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel2.setText("Due Date:");
-        IssueBookPanel.add(fnameLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 540, 100, 30));
+        IssueBookPanel.add(fnameLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 600, 100, 30));
 
         teach_detail2.setBackground(new java.awt.Color(102, 102, 255));
-        teach_detail2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        teach_detail2.setFont(new java.awt.Font("Cantarell", 1, 36)); // NOI18N
         teach_detail2.setForeground(new java.awt.Color(255, 51, 51));
         teach_detail2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         teach_detail2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/AddNewBookIcons/AddNewBookIcons/icons8_Books_52px_1.png"))); // NOI18N
@@ -598,7 +593,7 @@ public class IssueBookForm extends javax.swing.JFrame {
         borrower_id.setBackground(new java.awt.Color(255, 255, 255));
         borrower_id.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 51, 51)));
         borrower_id.setForeground(new java.awt.Color(0, 0, 0));
-        borrower_id.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        borrower_id.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         borrower_id.setPlaceholder("Borrower (Student, Teacher, Citizen) ID...");
         borrower_id.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -610,17 +605,17 @@ public class IssueBookForm extends javax.swing.JFrame {
                 borrower_idActionPerformed(evt);
             }
         });
-        IssueBookPanel.add(borrower_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 420, 320, 30));
+        IssueBookPanel.add(borrower_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 480, 320, 30));
 
-        fnameLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel3.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         fnameLabel3.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel3.setText("Book ID:");
-        IssueBookPanel.add(fnameLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 300, 100, 30));
+        IssueBookPanel.add(fnameLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 300, 100, 30));
 
         b_id.setBackground(new java.awt.Color(255, 255, 255));
         b_id.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 51, 51)));
         b_id.setForeground(new java.awt.Color(0, 0, 0));
-        b_id.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        b_id.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         b_id.setPlaceholder("Enter Book ID...");
         b_id.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -634,20 +629,20 @@ public class IssueBookForm extends javax.swing.JFrame {
         });
         IssueBookPanel.add(b_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 300, 320, 30));
 
-        fnameLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel4.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         fnameLabel4.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel4.setText("Staff ID:");
-        IssueBookPanel.add(fnameLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 360, 100, 30));
+        IssueBookPanel.add(fnameLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 360, 100, 30));
 
-        fnameLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel5.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         fnameLabel5.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel5.setText("Borrower ID:");
-        IssueBookPanel.add(fnameLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 420, 100, 30));
+        IssueBookPanel.add(fnameLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 480, 120, 30));
 
         staff_id.setBackground(new java.awt.Color(255, 255, 255));
         staff_id.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 51, 51)));
         staff_id.setForeground(new java.awt.Color(0, 0, 0));
-        staff_id.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        staff_id.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         staff_id.setPlaceholder("Enter Staff ID...");
         staff_id.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -656,39 +651,61 @@ public class IssueBookForm extends javax.swing.JFrame {
         });
         IssueBookPanel.add(staff_id, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 360, 320, 30));
 
-        fnameLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        fnameLabel6.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
         fnameLabel6.setForeground(new java.awt.Color(255, 51, 51));
         fnameLabel6.setText("Issue Date:");
-        IssueBookPanel.add(fnameLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 480, 100, 30));
+        IssueBookPanel.add(fnameLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 540, 100, 30));
 
         due_date.setColorBackground(new java.awt.Color(255, 51, 51));
         due_date.setColorForeground(new java.awt.Color(255, 51, 51));
         due_date.setPlaceholder("Due Date");
-        IssueBookPanel.add(due_date, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 540, 320, -1));
+        IssueBookPanel.add(due_date, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 600, 320, -1));
 
         issue_date.setColorBackground(new java.awt.Color(255, 51, 51));
         issue_date.setColorForeground(new java.awt.Color(255, 51, 51));
         issue_date.setPlaceholder("Issue Date");
-        IssueBookPanel.add(issue_date, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 480, 320, -1));
+        IssueBookPanel.add(issue_date, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 540, 320, -1));
 
         issue_book.setBackground(new java.awt.Color(255, 51, 51));
         issue_book.setText("Issue Book");
+        issue_book.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         issue_book.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 issue_bookActionPerformed(evt);
             }
         });
-        IssueBookPanel.add(issue_book, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 620, 120, 40));
+        IssueBookPanel.add(issue_book, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 680, 120, 40));
 
         clear.setBackground(new java.awt.Color(204, 204, 204));
         clear.setForeground(new java.awt.Color(0, 0, 0));
         clear.setText("Clear");
+        clear.setFont(new java.awt.Font("Cantarell", 1, 16)); // NOI18N
         clear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearActionPerformed(evt);
             }
         });
-        IssueBookPanel.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 620, 110, -1));
+        IssueBookPanel.add(clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 680, 110, -1));
+
+        borrower.setBackground(new java.awt.Color(0, 0, 0));
+        borrower.setForeground(new java.awt.Color(204, 204, 204));
+        borrower.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Student", "Teacher", "Citizen" }));
+        borrower.setColorArrow(new java.awt.Color(255, 0, 0));
+        borrower.setColorBorde(new java.awt.Color(255, 0, 0));
+        borrower.setColorFondo(new java.awt.Color(102, 102, 102));
+        borrower.setFont(new java.awt.Font("Cantarell", 0, 16)); // NOI18N
+        borrower.setName(""); // NOI18N
+        borrower.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                borrowerActionPerformed(evt);
+            }
+        });
+        IssueBookPanel.add(borrower, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 420, 320, 30));
+
+        fnameLabel7.setFont(new java.awt.Font("Cantarell", 0, 18)); // NOI18N
+        fnameLabel7.setForeground(new java.awt.Color(255, 51, 51));
+        fnameLabel7.setText("Borrower:");
+        IssueBookPanel.add(fnameLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 420, 100, 30));
 
         getContentPane().add(IssueBookPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 0, 600, 760));
 
@@ -779,6 +796,12 @@ public class IssueBookForm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_issue_bookActionPerformed
 
+    private void borrowerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_borrowerActionPerformed
+        // TODO add your handling code here:
+        index = borrower.getSelectedIndex();
+     
+    }//GEN-LAST:event_borrowerActionPerformed
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -835,6 +858,7 @@ public class IssueBookForm extends javax.swing.JFrame {
     private javax.swing.JLabel bdepart;
     private javax.swing.JLabel bgender;
     private javax.swing.JLabel binstituteLabel1;
+    private rojerusan.RSComboMetro borrower;
     private app.bolivia.swing.JCTextField borrower_id;
     private javax.swing.JLabel br_addressLabel;
     private javax.swing.JLabel br_departmentLabel;
@@ -845,6 +869,7 @@ public class IssueBookForm extends javax.swing.JFrame {
     private javax.swing.JLabel br_instituteLabel;
     private javax.swing.JLabel br_lnameLabel;
     private javax.swing.JLabel br_phoneLabel;
+    private javax.swing.ButtonGroup buttonGroup1;
     private necesario.MaterialButton clear;
     private rojeru_san.componentes.RSDateChooser due_date;
     private javax.swing.JLabel fnameLabel;
@@ -854,6 +879,7 @@ public class IssueBookForm extends javax.swing.JFrame {
     private javax.swing.JLabel fnameLabel4;
     private javax.swing.JLabel fnameLabel5;
     private javax.swing.JLabel fnameLabel6;
+    private javax.swing.JLabel fnameLabel7;
     private necesario.MaterialButton issue_book;
     private rojeru_san.componentes.RSDateChooser issue_date;
     private javax.swing.JPanel jPanel2;
